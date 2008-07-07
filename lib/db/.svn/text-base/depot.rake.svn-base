@@ -1,0 +1,130 @@
+DEPOT_DUMP_TABLES = %w[
+    account_autotec_values
+    accounts
+    accounts_crm_contacts
+    audio_types
+    body_types
+    contact_autotec_rep_values
+    crm_contacts
+    districts
+    doors
+    drive_trains
+    engines
+    equipment
+    exterior_colors
+    fuels
+    interior_colors
+    interior_types
+    makes
+    makes_vehicle_types
+    models
+    ove_sales_reps
+    parent_companies
+    parking_lot_listings
+    parking_lot_listing_comments
+    parking_lot_passenger_vehicles
+    parking_lot_vehicle_equipment
+    parking_lot_images
+    providers
+    source_attribute_conversion
+    states
+    territories
+    top_types
+    transmissions
+    trims
+    vehicle_types
+  ]
+  
+def depot_dump_base_command(tables)
+  depot = DB::MySQL::DatabaseConfiguration.configuration_for_env('depot_test')  
+  command = []
+  command << "mysqldump #{depot.mysql_command_line_connection}"
+  command << tables.join(" ")
+end
+
+namespace :db do
+  namespace :depot do
+    desc "Dump depot-owned table structure"
+    task :dump_tables do
+      puts "Dumping depot-owned table structure..."
+      dump_file = File.expand_path File.join(RAILS_ROOT, "db", "migrate", "depot_tables.sql")
+      command = depot_dump_base_command(DEPOT_DUMP_TABLES)
+      command << "--no-data=true"
+      command << "> #{dump_file}"
+      sh command.join(' ')
+      contents = File.read(dump_file)
+      contents.gsub!('MyISAM','InnoDB')
+      contents << "\nALTER TABLE states CHANGE COLUMN id id int(11) auto_increment;"
+      contents << "\nALTER TABLE parking_lot_passenger_vehicles CHANGE COLUMN imported imported tinyint(1) default 0;"
+      File.open(dump_file, "w") { |file| file.write contents }
+    end
+    
+    desc "Dump depot-owned table contents"    
+    task :dump_data do
+      puts "Dumping depot-owned table contents..."
+      dump_file = File.expand_path File.join(RAILS_ROOT, "db", "data", "depot_data.sql")
+      command = depot_dump_base_command(DEPOT_DUMP_TABLES - %w[accounts
+                                                               account_autotec_values
+                                                               accounts_crm_contacts
+                                                               contact_autotec_rep_values
+                                                               crm_contacts
+                                                               parking_lot_listings
+                                                               parking_lot_listing_comments
+                                                               parking_lot_passenger_vehicles
+                                                               parking_lot_images
+                                                               parking_lot_vehicle_equipment
+                                                               parking_lot_comments
+                                                               users])
+      command << "--no-create-info=true"
+      command << "> #{dump_file}"
+      sh command.join(' ')
+    end
+    
+    desc "Dump tables and data"
+    task :dump => %w[db:depot:dump_tables db:depot:dump_data]
+    
+    desc "Create depot-owned tables and load data"
+    task :load => %w[db:depot:load_tables db:depot:load_data]
+    
+    task :load_tables do
+      puts "Creating depot-owned tables..."
+      config = DB::MySQL::DatabaseConfiguration.configuration_for_env(RAILS_ENV)
+      dump_file = File.expand_path File.join(RAILS_ROOT, "db", "migrate", "depot_tables.sql")
+      command = []
+      command << "mysql #{config.mysql_command_line_connection}"
+      command << "< #{dump_file}"
+      sh command.join(' ')
+    end
+    
+    task :load_data do
+      puts "Loading depot-owned data..."
+      config = DB::MySQL::DatabaseConfiguration.configuration_for_env(RAILS_ENV)
+      dump_file = File.expand_path File.join(RAILS_ROOT, "db", "data", "depot_data.sql")
+      command = []
+      command << "mysql #{config.mysql_command_line_connection}"
+      command << "< #{dump_file}"
+      sh command.join(' ')
+    end
+  end
+
+  desc "Load source data tables and contents into ruby database"
+  task :load_source_data do
+
+    config = DB::MySQL::DatabaseConfiguration.configuration_for_env(RAILS_ENV)
+
+    command = []
+    command << "mysqlimport #{config.mysql_command_line_connection}"
+    command << "#{RAILS_ROOT}/db/data/zipcode/zipcodes.tab"
+
+    sh command.join(' ')
+    now = Time.now.utc.to_s(:db).inspect
+    update_query = "UPDATE #{Zipcode.table_name} SET created_on = #{now}, updated_on = #{now}"
+    sh %Q(echo '#{update_query}' | mysql #{config.mysql_command_line_connection})
+    
+    command = []
+    command << "mysqlimport #{config.mysql_command_line_connection}"
+    command << "#{RAILS_ROOT}/db/data/zipcode/direct_marketing_areas.tab"
+
+    sh command.join(' ')
+  end
+end

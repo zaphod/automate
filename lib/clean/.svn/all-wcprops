@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/repository/!svn/ver/8366/ove-ruby/trunk/lib/tasks/clean
+END
+clean_all.rake
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repository/!svn/ver/8366/ove-ruby/trunk/lib/tasks/clean/clean_all.rake
+END

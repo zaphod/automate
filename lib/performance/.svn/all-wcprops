@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/performance
+END
+test.rake
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/performance/test.rake
+END
+db.rake
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/performance/db.rake
+END
+metrics.rake
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/performance/metrics.rake
+END

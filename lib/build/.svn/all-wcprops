@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/repository/!svn/ver/9844/ove-ruby/trunk/lib/tasks/build
+END
+translation.rake
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repository/!svn/ver/5816/ove-ruby/trunk/lib/tasks/build/translation.rake
+END
+build.rake
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repository/!svn/ver/9844/ove-ruby/trunk/lib/tasks/build/build.rake
+END
+growl.rake
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/repository/!svn/ver/3743/ove-ruby/trunk/lib/tasks/build/growl.rake
+END

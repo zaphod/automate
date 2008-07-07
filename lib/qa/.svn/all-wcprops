@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/repository/!svn/ver/9457/ove-ruby/trunk/lib/tasks/qa
+END
+build.rake
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repository/!svn/ver/9457/ove-ruby/trunk/lib/tasks/qa/build.rake
+END
+load_yaml.rake
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repository/!svn/ver/2286/ove-ruby/trunk/lib/tasks/qa/load_yaml.rake
+END
+qa_acceptance.rake
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repository/!svn/ver/7999/ove-ruby/trunk/lib/tasks/qa/qa_acceptance.rake
+END

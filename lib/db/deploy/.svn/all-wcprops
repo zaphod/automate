@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repository/!svn/ver/9157/ove-ruby/trunk/lib/tasks/db/deploy
+END
+deploy.rake
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repository/!svn/ver/9157/ove-ruby/trunk/lib/tasks/db/deploy/deploy.rake
+END

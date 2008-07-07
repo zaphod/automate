@@ -1,0 +1,237 @@
+require 'readline'
+
+Rake::Task[:default].prerequisites.clear
+Rake::Task[:default].enhance [:pc]
+
+task :pc => %w[
+  log:clear
+  svn:delete
+  svn:up
+  svn:fail_on_conflict
+  install_reliable_timer_if_necessary
+  install_mixology_if_necessary
+  translations:generate_dev
+  translations:generate_fr
+  db:reset_if_necessary
+  test:unit
+  db:test:prepare
+  insert_factory_defaults
+  deep_test:functional
+  svn:add
+  growl:update_cruise
+  svn:st
+  show_success
+]
+
+desc "Insert defaults for the test database using the factory"
+task :insert_factory_defaults => :environment do
+  require 'test/infrastructure/factories/factory'
+  Factory.insert_defaults
+  Factory.create_vehicle_location :location_type => VehicleLocation::LocationType::DistributionCenter
+  Factory.create_vehicle_location :location_type => VehicleLocation::LocationType::Auction
+  Factory.create_user :username => "depot"
+end
+
+task :show_success do
+  puts "about to check in"
+end
+
+task :update_message do
+  update_all_saved_data
+end
+
+task :abort_on_broken_build do
+  `curl -s http://devci001.ove.local:3333/ | grep "project_ove-core" | grep "project build_success"`
+  
+  unless $?.success?
+    puts "Uh oh, the build is broken!"
+    choice = Readline.readline("CI Build is currently broken.  Are you sure you want to commit? (y/n): ")
+    raise "Cancelling commit due to broken build." unless choice == 'y'
+  end
+end
+
+desc "Run to check in"
+task :commit => ['svn:st', :update_message, 'svn:delete', 'svn:up', 'svn:fail_on_conflict', :pc, :abort_on_broken_build, 'svn:merge_to_trunk', :recognize] do
+  username = get_saved_data "username"
+  commit_pair = get_saved_data "pair"
+  story_or_bug_number = get_saved_data "story_name_or_bug_number"
+  commit_message = get_saved_data "message"
+  
+  command = %[svn ci --username #{username.chomp} -m "#{commit_pair.chomp}: #{story_or_bug_number.chomp} - #{commit_message.chomp}"]
+  puts command
+  puts %x[#{command}]
+end
+
+desc "To be run by ba's to check in data"
+task :commit_data => ['svn:up', 'svn:fail_on_conflict', 'db:reset'] do
+  update_saved_data "username"
+  update_saved_data "message"
+  username = get_saved_data "username"
+  message = get_saved_data "message"
+
+  command = %[svn ci --username #{username.chomp} -m "#{username.chomp}: data - #{message.chomp}"]
+  puts command
+  puts %x[#{command}]
+end
+
+desc 'merge changes from branch to trunk'
+task :'svn:merge_to_trunk' do
+  if %x[svn info].include? "branches" 
+    puts "Merging changes into trunk.  Don't forget to check these in." 
+    trunk = "#{RAILS_ROOT}/../ove_trunk"
+    system "svn up #{trunk}; svn diff | patch -p0 -d #{trunk}" 
+  end
+end
+
+task :ci => :commit
+
+DEVS = %w[
+          z
+          hammer
+          david
+          philippe
+          dan
+          sudhindra
+          rao
+          clint
+          chu
+          steven
+          wisener
+          rob
+          pat
+          patrick
+          thunderbear
+          rick
+         ]
+
+task :recognize do
+  if get_saved_data("story_complete").downcase.include?("y")
+    require 'playlist'
+    ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+    Playlist.play(developers)
+  end
+end
+
+task :standup do
+  require 'playlist'
+  ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+  Playlist.play ["standup"]
+end
+
+task :birthday do
+  require 'playlist'
+  ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+  Playlist.play ["birthday"]
+end
+
+task :install_reliable_timer_if_necessary do
+  puts "Detecting reliable_timer install..."
+  installed_gem = %x[gem list reliable_timer | grep '0.3']
+  if installed_gem.strip == ""
+    puts "Installing reliable_timer gem..."
+    sh "cd #{File.dirname(__FILE__) + '/../../../tools/reliable_timer'} && sudo rake install"
+  end
+end
+
+task :install_mixology_if_necessary do
+  puts "Detecting mixology install..."
+  installed_gem = %x[gem list mixology | grep '0.1.0']
+  if installed_gem.strip == ""
+    puts "Installing mixology gem..."
+    sh "sudo gem install mixology --version 0.1.0"
+  end
+end
+
+
+task :benny do
+  require 'playlist'
+  ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+  Playlist.play ["benny"]
+end
+
+def developers
+  pair = get_saved_data "pair"
+  pair.downcase.gsub("/", " ").split(" ").select { |p| DEVS.include? p }
+end
+
+def get_saved_data attribute
+  data_path = File.expand_path(File.dirname(__FILE__) + "/#{attribute}.data")
+  File.read(data_path)
+end
+
+def update_saved_data attribute
+  
+  data_path = File.expand_path(File.dirname(__FILE__) + "/#{attribute}.data")
+  `touch #{data_path}` unless File.exist? data_path
+  saved_data = File.read(data_path)
+  
+  puts "last #{attribute}: " + saved_data unless saved_data.chomp.empty?
+  input = nil
+  loop do 
+    input = Readline.readline("#{attribute}: ")
+    break unless (saved_data.chomp.empty? && input.chomp.empty?)
+  end
+
+  if input.chomp.any?
+    File.open(data_path, "w") { |file| file << input }
+  else
+    puts "using: " + saved_data.chomp
+  end
+  input.chomp.any? ? input : saved_data
+end
+
+def update_all_saved_data
+  attributes = {}
+  ["username", "pair", "story_name_or_bug_number", "message", "story_complete"].each do |attribute|
+    data_path = File.expand_path(File.dirname(__FILE__) + "/#{attribute}.data")
+    `touch #{data_path}` unless File.exist? data_path
+    saved_data = File.read(data_path)
+    attributes[attribute] = saved_data
+    puts "last #{attribute}: " + saved_data
+  end
+  
+  if attributes.values.any? { |element| element.empty? }
+    ["username", "pair", "story_name_or_bug_number", "message", "story_complete"].each do |attribute|
+      update_saved_data attribute
+    end
+    return
+  end
+
+  input = 'N'
+  
+  input_thread = Thread.new { input = Readline.readline("updates? [y|m|N] ") }
+  reaper_thread = Thread.new do
+    endtime = Time.now + 3
+    loop do
+      break if !input_thread.status
+      break if Time.now >= endtime
+    end
+    puts "N" if Time.now >= endtime
+    input_thread.terminate
+  end
+  input_thread.join
+  reaper_thread.join
+
+  if input == 'y'
+    ["username", "pair", "story_name_or_bug_number", "message", "story_complete"].each do |attribute|
+      update_saved_data attribute
+    end
+  elsif input == "m"
+    update_saved_data "message"
+  end
+
+end
+
+def say statement, voice = "Bruce"
+  if RUBY_PLATFORM =~ /darwin/
+    `echo thought | sudo -S -p '' ls`
+    old_volume = `osascript -e "get Volume settings" | sed 's/,.*$//' | sed 's/^.*://'`.strip
+    old_volume = old_volume.to_i/10
+    %x[osascript -e "set Volume 100"]
+    puts statement
+    %x[say -v "#{voice}" "#{statement}"]
+    %x[osascript -e "set Volume #{old_volume}"]
+  end
+end
+
+

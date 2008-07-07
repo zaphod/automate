@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/repository/!svn/ver/11041/ove-ruby/trunk/lib/tasks/test
+END
+acceptance.rake
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repository/!svn/ver/11041/ove-ruby/trunk/lib/tasks/test/acceptance.rake
+END
+selenium_grid.rake
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/test/selenium_grid.rake
+END
+view.rake
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repository/!svn/ver/11041/ove-ruby/trunk/lib/tasks/test/view.rake
+END

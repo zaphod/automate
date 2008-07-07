@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/db
+END
+snapshot.rake
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/db/snapshot.rake
+END
+test.rake
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/db/test.rake
+END
+reset.rake
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/db/reset.rake
+END
+depot.rake
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/db/depot.rake
+END
+deploy.rake
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repository/!svn/ver/10614/ove-ruby/trunk/lib/tasks/db/deploy.rake
+END
+check.rake
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repository/!svn/ver/9494/ove-ruby/trunk/lib/tasks/db/check.rake
+END
