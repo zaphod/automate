@@ -34,7 +34,9 @@ task :enable_all_stubs do
   require File.join(File.dirname(__FILE__), "/../../test/stubs/enable_all_stubs.rb")
 end
 
-$LOAD_PATH << File.expand_path(File.dirname(__FILE__) + "/../../vendor/gems/deep_test-1.0.2/lib")
+# $LOAD_PATH << File.expand_path(File.dirname(__FILE__) + "/../../vendor/gems/deep_test-1.0.2/lib")
+require "rubygems"
+require "deep_test"
 require "deep_test/rake_tasks"
 
 DeepTest::TestTask.new "deep_test:functional" do |t|

@@ -1,0 +1,80 @@
+= Automate Library
+
+== Synopsis
+
+This library helps you quickstart your project by adding useful rake tasks to your project.
+
+== More Information
+
+The gem comes with the following files
+db tasks
+nmap - nukes migrates and prepares database for build 
+validation - validates data against the ruby object model - checks db constraints and prints a report with invalid data - uses
+rails model validations
+constraints - enforces constraints on the database
+
+mysql
+controls the mysql instance
+shutdown the instance, grant permissions, create users, create schemas, 
+drop databases, drop users
+
+performance 
+generates random data to populate database for performance testing
+httperf - performance httperf based test and analysis for gauging performance
+
+rake commit
+
+
+builds
+dev - build, ci(continuous integration), pc(pre commit), commit, test:unit, test:functionals 
+test, qa - setup qa environment with qa, test data and run tests
+selenium - run selenium tests with selenium grid or without
+selenium_grid
+smoke - run smoke tests - picked by the team
+html:validation - validates html using tidy
+view - runs only view tests
+
+
+helper - nice to have with your code
+routes - shows routes in the app
+clean - cleans tmp directory of logs, sessions etc.
+
+coverage  - rcov - test coverage for ruby
+worker - can trigger and control workers through a rake task
+
+
+
+Build.rake
+Build tasks for the project - includes triggering builds with a preset sequence of tasks
+eg: 
+build:acceptance:firefox does the following
+* sets up the environment
+* sets up environment specific for acceptance tests
+* clears tmp directory
+* nukes, migrates and prepares database
+* fills the database with sample_data for acceptance tests
+* runs tests
+
+Routes.rake
+Pretty prints all the routes in your project
+
+svn.rake
+Makes all the svn related tasks rakeable. 
+
+test.rake
+Has all tasks to run tests
+
+db tasks
+* Resets database
+* Takes a snapshot of the database (so you can examine the database at the time of test failures, restart from a known point)
+* Checks for violations of table constraints
+* controls the mysql instance through rake
+
+
+build.rake
+clean_all.rake
+growl.rake
+routes.rake
+svn.rake
+svn/commit.rake
+test.rake
