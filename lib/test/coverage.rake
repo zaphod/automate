@@ -6,7 +6,9 @@ begin
   rcov_bundle_path = "#{rcov_path}/ext/rcovrt/#{sitearch}"
   rcov_output = ENV["CC_BUILD_ARTIFACTS"] || 'tmp/coverage'
 
-  require "#{rcov_lib}/rcov/rcovtask"
+  require 'rubygems'
+  require 'rcov/rcovtask'
+  # require "#{rcov_lib}/rcov/rcovtask"
   require 'rbconfig'
   include Config
   
@@ -76,5 +78,5 @@ begin
 
   end
 rescue Exception
-  puts "WARNING: Unable to load RCov"
+  # puts "gem not installed : Install rcov gem"
 end

@@ -1,5 +1,9 @@
-require 'rubygems'
-require "deep_test/rake_tasks"
+begin
+  require 'rubygems'
+  require "deep_test/rake_tasks"
+rescue LoadError
+  puts "gem not installed : Install deep_test gem"
+end
 
 DeepTest::TestTask.new "deep_test:functional" do |t|
   t.pattern = "test/suites/functional/**/*_test.rb"

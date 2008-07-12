@@ -6,11 +6,12 @@
 def cap(*parameters)
   begin
     require 'rubygems'
+    require 'capistrano/cli'
   rescue LoadError
+    puts "gem not installed : Install capistrano gem"
     # no rubygems to load, so we fail silently
   end
 
-  require 'capistrano/cli'
 
   STDERR.puts "Capistrano/Rake integration is deprecated."
   STDERR.puts "Please invoke the 'cap' command directly: `cap #{parameters.join(" ")}'"
