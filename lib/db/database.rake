@@ -2,12 +2,12 @@ namespace :db do
   
   desc "Show the db diff for the day"
   task :diff do
-    sh %Q(svn diff -r "{#{Time.now.strftime('%Y-%m-%d')}}":"{#{1.day.from_now.strftime('%Y-%m-%d')}}" db/migrate/001_release1.rb)
+    sh %Q(svn diff -r "{#{Time.now.strftime('%Y-%m-%d')}}":"{#{1.day.from_now.strftime('%Y-%m-%d')}}" db/migrate/reference_data.rb)
   end
 
   desc "Generate more human readable db schema"
   task :readable => :environment do
-    migration_file = File.expand_path(File.join(RAILS_ROOT, 'db', 'migrate', '001_release1.rb'))
+    migration_file = File.expand_path(File.join(RAILS_ROOT, 'db', 'migrate', 'reference_data.rb'))
     migration = File.read migration_file
     migration = migration.match(/self.up/).post_match
     migration.gsub! /create_table/, 'table'

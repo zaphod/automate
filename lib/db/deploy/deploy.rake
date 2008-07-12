@@ -9,7 +9,7 @@ namespace :db do
       raise "DATASET parameter needed. eg. sample_data" unless ENV['DATASET']
     end
     
-    desc "Loads schema with all depot data, zip & dmas, release 1 data, and specified dataset"
+    desc "Loads schema all data in the order specified"
     task :load_dataset => %w[environment explicitly_selected_dataset db:load_source_data db:load_ruby_reference_data db:depot:load_data] do
       # Loading release 1 data and ENV['DATASET']
       DB::Dataset.selected.load
@@ -18,7 +18,7 @@ namespace :db do
     desc "Reset and load dataset"
     task :reset_and_load_dataset => %w[reset_schema load_dataset]
     
-    desc "Reset and load reference data(zips and dmas and ruby reference data)"
+    desc "Reset and load reference data"
     task :reset_and_load_ruby_reference_data => %w[reset_schema db:load_source_data db:load_ruby_reference_data]
     
     desc "Create a snapshot of the database for easy restore"

@@ -27,7 +27,7 @@ begin
     
     Rcov::RcovTask.new(:unit => [:environment]) do |t|
       t.test_files = FileList['test/unit/**/*_test.rb']
-      t.rcov_opts = ["--html", "--rails", "--include-file 'app/models/body_type.rb'", "--exclude 'app/helpers,app/controllers,/usr/local/lib/site_ruby/1.8/rbconfig,/usr/local/lib/site_ruby/1.8,/usr/local/lib/site_ruby/1.8/rubygems'"]
+      t.rcov_opts = ["--html", "--rails", "--exclude 'app/helpers,app/controllers,/usr/local/lib/site_ruby/1.8/rbconfig,/usr/local/lib/site_ruby/1.8,/usr/local/lib/site_ruby/1.8/rubygems'"]
       t.libs << '"' + rcov_lib + '"'
       t.libs << '"' + rcov_bundle_path + '"'
       t.output_dir = rcov_output + '/unit'
@@ -46,7 +46,7 @@ begin
     
     Rcov::RcovTask.new(:unit_for_combined_report => [:clean, :environment]) do |t|
       t.test_files = FileList['test/unit/**/*_test.rb']
-      t.rcov_opts = ["--aggregate 'rcov_tmp'", "--html", "--rails", "--include-file 'app/models/body_type.rb'", "--exclude 'db,/usr/local/lib/site_ruby/1.8/rbconfig,/usr/local/lib/site_ruby/1.8,/usr/local/lib/site_ruby/1.8/rubygems'"]
+      t.rcov_opts = ["--aggregate 'rcov_tmp'", "--html", "--rails", "--exclude 'db,/usr/local/lib/site_ruby/1.8/rbconfig,/usr/local/lib/site_ruby/1.8,/usr/local/lib/site_ruby/1.8/rubygems'"]
       t.libs << '"' + rcov_lib + '"'
       t.libs << '"' + rcov_bundle_path + '"'
       t.output_dir = rcov_output + '/unit_combined'

@@ -5,20 +5,19 @@ namespace :test do
     task :environment do
       ENV['SELENIUM_APPLICATION_HOST'] = 'APPLICATION_HOST'
       ENV['SELENIUM_APPLICATION_BASE_PORT'] = "5000"
-      ENV['APP_CAP_ENVIRONMENT'] = "devweb002"
+      ENV['APP_CAP_ENVIRONMENT'] = "production"
     end
     
     desc("Run selenium test suite on Firefox")
     task :firefox do 
       ENV['SELENIUM_BROWSER'] = '*chrome'
-      ENV['SELENIUM_REMOTE_CONTROL'] = 'jam123.local' # iMac
+      ENV['SELENIUM_REMOTE_CONTROL'] = 'selenium_grid'
       
       Rake::Task[:'test:acceptance:run_tests_in_parallel'].invoke
     end
 
     desc("Run selenium tests in parallel")
     task :run_tests_in_parallel => :environment do
-      # functional_areas = %w[search buy sell admin myove private content]
       runner = MultiProcessSpecRunner.new(15)
       runner.run(
         Dir["test/suites/acceptance/**/spec_*.rb"],

@@ -22,16 +22,9 @@ namespace :performance do
     task :populate => [:environment] do
       require File.dirname(__FILE__) + '/../../../db/performance_data_generator'
       factor = ENV['PERFORMANCE_GENERATOR_SCALE_FACTOR'] ? ENV['PERFORMANCE_GENERATOR_SCALE_FACTOR'].to_f : 1
-      accounts_count = (150_000 * factor).ceil
-      accounts_crm_contacts_count = (500_000 * factor).ceil
-      account_privileges_count = (300_000 * factor).ceil
-      buyer_groups_count = (500 * factor).ceil
-      buyer_group_memberships_count = (150_000 * factor).ceil
-      crm_contacts_count = (500_000 * factor).ceil
-      listings_count = (500_000 * factor).ceil
-      users_count = (150_000 * factor).ceil
-      vehicles_count = (500_000 * factor).ceil # number needs to be 1.5 - 2 million
-      parking_lot_listings_count = (1_000 * factor).ceil
+      # tables.each do |table|
+      #   table_count = (size_in_production_db(table) * factor).ceil
+      # end
       display_counts = proc do
         local_variables.grep(/_count$/).each do |variable|
           count = eval(variable)
@@ -40,17 +33,7 @@ namespace :performance do
       end
       display_counts.call
       puts "== Populating DB with production like data (x#{factor}) ========"
-      PerformanceDataGenerator.new.generate_crm_contacts(crm_contacts_count) # extras not associated with users
-      PerformanceDataGenerator.new.generate_accounts(accounts_count)
-      PerformanceDataGenerator.new.generate_accounts_crm_contacts(accounts_crm_contacts_count)
-      PerformanceDataGenerator.new.generate_users(users_count)
-      PerformanceDataGenerator.new.generate_account_privileges(account_privileges_count)
-      PerformanceDataGenerator.new.generate_buyer_groups(buyer_groups_count)
-      PerformanceDataGenerator.new.generate_buyer_group_memberships(buyer_group_memberships_count)
-      PerformanceDataGenerator.new.generate_listings(listings_count)
-      PerformanceDataGenerator.new.generate_parking_lot_passenger_vehicles(vehicles_count)
-      PerformanceDataGenerator.new.generate_parking_lot_listings(parking_lot_listings_count)
-      PerformanceDataGenerator.new.generate_equipment_listings
+      PerformanceDataGenerator.new.generate_tables()
       display_counts.call
       puts
     end

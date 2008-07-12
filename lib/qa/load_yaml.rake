@@ -3,20 +3,6 @@ require 'csv'
 
 namespace :qa do
 
-  task :foo => [:environment] do
-    `mysql -u root -e "DROP DATABASE chu_development; CREATE DATABASE chu_development;"`
-    Rake::Task[:'db:migrate'].invoke
-    
-    Dir[File.expand_path("#{RAILS_ROOT}/test/fixtures/selenium/baseline")].each do |path|
-      ENV['FROM'] = ENV['TO'] = path      
-      Rake::Task[:'qa:yaml_to_db'].invoke
-      Rake::Task[:'qa:dump_csv'].invoke
-      FileUtils.rm Dir.glob(File.join(path, "*.yml"))
-      puts "Now run: rake qa:load_database FROM=#{path}"
-    end
-  end
-  
-  
   desc "Convert all files in {FROM}/*.yml to {TO}"
   task :yaml_to_db => [:environment] do
     yaml_path = File.expand_path(ENV['FROM'])
@@ -38,9 +24,6 @@ namespace :qa do
           klass.create(value)
         end
         
-	if table_name != "time_zone_infos"
-	  raise "Convertion contains error: Expected yaml count = #{data.values.size}, Actual db records inserted = #{klass.count}..." if klass.count != data.values.size
-	end
       end
     end
 

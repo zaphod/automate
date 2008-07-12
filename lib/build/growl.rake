@@ -1,9 +1,10 @@
+desc("Growl auto updates with the cruise status to notify of build status - needs you to configure hostname")
 namespace :growl do
   task :update_cruise do
     config_location = File.join(RAILS_ROOT,'cruise_config.rb')
     begin
-      host = `hostname`.chomp
-      `ifconfig` =~ /inet (10\.\d+\.\d+\.\d+)/
+      host = `hostname`.chomp # hostname needs to be configured here
+      `ifconfig` =~ /inet (10\.\d+\.\d+\.\d+)/  #assuming a 10.0.0.0 style IP
       ip = $1
       return unless ip
       cruise_config = File.readlines(config_location)

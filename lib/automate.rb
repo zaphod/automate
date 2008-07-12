@@ -2,16 +2,18 @@ class Automate
   
   def self.run
     unless($*.empty?)
-      project = "#{Dir.pwd}/#{$*}"
+      args = $*
+      project_name = args[0]
+      project = "#{Dir.pwd}/#{args[0]}"
       target = mkdir(project)
       target = copy_rake_tasks(target)
     else
-      usage
+      puts usage
     end
   end
   
   def self.usage
-    puts "Usage : automate <project_name>"
+    "Usage : automate <project_name>"
   end
   
   def self.mkdir(project)

@@ -1,11 +1,5 @@
 
-functional_spec_areas = ["search", 
-                        "buy", 
-                        "sell", 
-                        "admin", 
-                        "myove", 
-                        "private", 
-                        "content"]
+functional_spec_areas = ["List", "Of", "Folders", "containing", "tests/specs"]
 
 functional_directory        = '../dash/functional'
 public_dashboard_directory  = '../dash/public/results'
@@ -62,7 +56,7 @@ begin
   end
 
   desc "Reload/Migrate the db, run the selenium tests, and report results to the dashboard"
-  task :run_selenium_specs => [:'db:data:sample_data', :'db:dev:reset', :'qa:search', :'qa:buy', :'qa:sell', :'qa:admin', :'qa:myove', :'qa:private', :'qa:content']
+  task :run_selenium_specs => [:'db:data:sample_data', :'db:dev:reset', :'qa:#{area}']
 
 rescue LoadError
   # don't complain if we don't have rspec, just don't define the task.

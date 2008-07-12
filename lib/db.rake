@@ -11,7 +11,7 @@ namespace :db do
   end
   
   task :load_ruby_reference_data do
-    load "#{RAILS_ROOT}/db/data/releases/release_1_data.rb"
+    # load "#{RAILS_ROOT}/db/data/reference_data.rb"
   end
 
   desc "drop and re-create the database"
@@ -36,14 +36,14 @@ namespace :db do
   desc "Reset development and testing database"
   task :reset => %w[db:nuke_migrate_and_populate_data db:test:prepare insert_factory_defaults]
 
-  desc "Only resets the database if the migration or release1 data file has changed"
+  desc "Only resets the database if the migration or reference data file has changed"
   task :reset_if_necessary do
-    release_data = DB::Dataset.baseline_file
-    sample_data = DB::Dataset.selected.file
+    reference_data = DB::Dataset.baseline_file
+    selected_dataset = DB::Dataset.selected.file
     
     if new_migration? | 
-       file_changed?(release_data) |
-       file_changed?(sample_data) # keep these single |, not || - Dan
+       file_changed?(reference_data) |
+       file_changed?(selected_dataset) # keep these single |, not || - Dan
       Rake::Task["db:nuke_migrate_and_populate_data"].invoke
     else
       puts "=== Skipping database reset." + "=" * 40
@@ -73,14 +73,9 @@ namespace :db do
     end
   end
   
-  desc "Show the db diff for the day"
-  task :diff do
-    sh %Q(svn diff -r "{#{Time.now.strftime('%Y-%m-%d')}}":"{#{1.day.from_now.strftime('%Y-%m-%d')}}" db/migrate/001_release1.rb)
-  end
-
   desc "Generate more human readable db schema"
   task :readable => :environment do
-    migration_file = File.expand_path(File.join(RAILS_ROOT, 'db', 'migrate', '001_release1.rb'))
+    migration_file = File.expand_path(File.join(RAILS_ROOT, 'db', 'migrate', 'reference_data.rb'))
     migration = File.read migration_file
     migration = migration.match(/self.up/).post_match
     migration.gsub! /create_table/, 'table'
@@ -116,54 +111,9 @@ namespace :db do
     end
   end
   
-  desc "Truncate tables for depot reload" 
-  task :truncate_for_depot_reload => :environment do
-    conn = ActiveRecord::Base.connection
-    puts "Truncating tables for depot reload."
-    %w(arbitration_policy_agreements watched_listings search_criteria saved_searches user_sites 
-       account_privileges user_agreements images_listings equipment_listings bids proxies sales 
-       listings users accounts_crm_contacts contact_autotec_rep_values crm_contacts owner_group_memberships 
-       parking_lot_vehicle_equipment parking_lot_comments parking_lot_image_download_requests 
-       parking_lot_images parking_lot_listings parking_lot_passenger_vehicles trims models buyer_group_memberships 
-       fsp_memberships account_autotec_values accounts facilitation_service_providers parent_companies
-       districts territories ove_sales_reps distribution_centers).each do |table|
-      begin 
-        conn.execute("set foreign_key_checks = 0") if table == "bids"
-        conn.execute("truncate #{table}")
-      ensure
-        conn.execute("set foreign_key_checks = 1") if table == "bids"
-      end
-    end
-  end
-  
-  desc "Fix foreign keys after depot reload"
-  task :fix_foreign_keys_for_depot_reload => :environment do
-    conn = ActiveRecord::Base.connection
-    conn.execute <<-END_SQL
-     update fees join crm_account_match_mtg on fees.account_id = crm_account_match_mtg.old_crm_account_id
-     set fees.account_id = crm_account_match_mtg.new_crm_account_id
-    END_SQL
-    conn.execute <<-END_SQL
-     update price_right_policy_overrides join crm_account_match_mtg on price_right_policy_overrides.account_id = crm_account_match_mtg.old_crm_account_id
-     set price_right_policy_overrides.account_id = crm_account_match_mtg.new_crm_account_id
-    END_SQL
-    conn.execute <<-END_SQL
-     update arbitration_policies a join crm_account_match_mtg c on a.account_id = c.old_crm_account_id
-     set a.account_id = c.new_crm_account_id
-    END_SQL
-    conn.execute <<-END_SQL
-     update fsp_membership_contacts fmc join crm_fsp_match_mtg c on fmc.fsp_id = c.old_fsp_id
-     set fmc.fsp_id = c.new_fsp_id
-    END_SQL
-    conn.execute <<-END_SQL
-     update fee_types ft join crm_fsp_parent_match_mtg c on ft.parent_company_id = c.old_fsp_parent_id
-     set ft.parent_company_id = c.new_fsp_parent_id
-    END_SQL
-  end
-  
   desc "Dump image for performance"
   task :dump_performance do
-    system "mysqldump -u root --no-create-info --complete-insert --single-transaction ove_development > ../performance_dump.sql"
+    system "mysqldump -u root --no-create-info --complete-insert --single-transaction DEVELOPMENT_DATABASE > ../performance_dump.sql"
     contents = File.read('../performance_dump.sql')
     File.open("../performance_dump.sql","w") do |file|
       file << <<-end_sql

@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), '/selenium')
 namespace :test do
   namespace :view do
     
-    desc("Start Selenium server, application and run selenium test suite on local developper box")
+    desc("Start Selenium server, application and run selenium test suite on local developer box")
     task :local do 
       Selenium::RemoteControl.restart
       Selenium::Application.restart
@@ -21,7 +21,7 @@ namespace :test do
     desc("Run selenium test suite on Firefox")
     task :firefox do 
       ENV['SELENIUM_BROWSER'] = '*chrome'
-      ENV['SELENIUM_REMOTE_CONTROL'] = '10.103.170.130'
+      ENV['SELENIUM_REMOTE_CONTROL'] = 'IPADDRESS'
       
       Rake::Task[:'test:view:run_tests_in_parallel'].invoke
     end
@@ -29,7 +29,7 @@ namespace :test do
     desc("Run selenium test suite on IE")
     task :ie do 
       ENV['SELENIUM_BROWSER'] = '*iexplore'
-      ENV['SELENIUM_REMOTE_CONTROL'] = '10.103.170.173'
+      ENV['SELENIUM_REMOTE_CONTROL'] = 'IPADDRESS'
       
       Rake::Task[:'test:view:run_tests_in_parallel_ie'].invoke
     end
@@ -44,16 +44,7 @@ namespace :test do
     task :run_tests_in_parallel => :environment do 
       require File.expand_path(File.dirname(__FILE__) + '/../../multiprocess_spec_runner')
       runner = MultiProcessSpecRunner.new(20)
-      runner.run(Dir['test/view/add_fee/*.rb'] +
-                 Dir['test/view/add_fee_type/*.rb'] +
-                 Dir['test/view/basic_search_test.rb'] +
-                 Dir['test/view/browse_test.rb'] + 
-                 Dir['test/view/edit_inline_listing/*.rb'] +
-                 Dir['test/view/edit_listing_test.rb'] +
-                 Dir['test/view/listing_duration/*.rb'] +
-                 Dir['test/view/my_ove/*.rb'] +
-                 Dir['test/view/price_right_policy_override/*.rb'] +
-                 Dir['test/view/retail_view_test.rb'], 
+      runner.run(Dir['test/view/*.rb'], 
                  ENV['SELENIUM_APPLICATION_HOST'], ENV['SELENIUM_APPLICATION_BASE_PORT'].to_i)
     end
 
@@ -61,7 +52,7 @@ namespace :test do
     task :run_tests_in_parallel_ie => :environment do 
       require File.expand_path(File.dirname(__FILE__) + '/../../multiprocess_spec_runner')
       runner = MultiProcessSpecRunner.new(1)
-      runner.run(Dir['test/view/**/*.rb'], 'x.x.x.x', 5010)
+      runner.run(Dir['test/view/**/*.rb'], 'IPADDRESS', 5010)
     end
 
     desc("Start selenium remote control locally")
@@ -71,7 +62,7 @@ namespace :test do
 
     desc("Upload DB sql dump to the machine hosting Selenium Grid farm database")
     task :upload_sqldump => :environment do 
-      sh "scp #{RAILS_ROOT}/tmp/development.mysqldump overun@#{ENV['SELENIUM_APPLICATION_HOST']}:/tmp"      
+      sh "scp #{RAILS_ROOT}/tmp/development.mysqldump login@#{ENV['SELENIUM_APPLICATION_HOST']}:/tmp"      
     end
 
     desc("Update code and database for all Mongrels serving the selenium farm")

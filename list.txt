@@ -1,0 +1,55 @@
+     1   clean/clean_all.rake --done
+     2  
+	     3   qa/qa_acceptance.rake --done
+     4   qa/build.rake --done
+     5   qa/load_yaml.rake --done
+     6  
+     7   svn/svn.rake --done
+     8   svn/commit.rake --done
+     9  
+    10   test/selenium.rake --done
+    11   test/selenium.rb --done
+    12   test/view.rake --done
+    13  
+    14   build/build.rake --done
+    15   build/growl.rake --done
+    16  
+    17   performance/db.rake --done
+    18   performance/metrics.rake  --done
+    19   performance/test.rake --done
+    20   performance.rake --done
+    21  
+    22   database.rake -- done needs validate_data.rb
+    23   db.rake -- done
+    24   db/check.rake -- done
+    25   db/deploy/deploy.rake --done
+    26   db/deploy.rake --done
+    27   db/extract_fixtures.rake --done extracts fixtures from db
+    28   db/mysql.rake --done controls mysql instance
+    29   db/snapshot.rake --done manages db snapshot
+    30   db/table_counts.rake --done counts rows in tables
+    31   db/test.rake --done drop test_db
+    32   db/test_data.rake --done manage test_db
+    33  
+    34   automate.rake
+    35   coverage.rake -- done requires rcov
+    36   capistrano.rake --done
+    37   deep_test.rake --done
+    38   routes.rake --done
+    39   selenium_grid.rake --done
+    40   test.rake --done
+    41   testing.rake --done
+    42   worker.rake -- done
+    43   mysql.rake --done
+
+		#		removed
+    26  qa.rake
+    27  qa_acceptance.rake
+    10  coverage.rake
+    19  growl.rake --done
+    20  image_downloader.rake
+    35  svn.rake
+    42  translation.rake
+    43  translations.rake
+    28  reset.rake
+    32  services.rake

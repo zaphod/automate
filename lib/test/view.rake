@@ -4,12 +4,12 @@ namespace :test do
     task :environment do
       ENV['SELENIUM_APPLICATION_HOST'] = "APPLICATION_HOST"
       ENV['SELENIUM_APPLICATION_BASE_PORT'] = "5000"
-      ENV['APP_CAP_ENVIRONMENT'] = "devweb003"
+      ENV['APP_CAP_ENVIRONMENT'] = "IPADDRESS"
     end    
 
     task :firefox do 
       ENV['SELENIUM_BROWSER'] = '*chrome'
-      ENV['SELENIUM_REMOTE_CONTROL'] = 'jam123.local' # iMac
+      ENV['SELENIUM_REMOTE_CONTROL'] = 'IPADDRESS'
       
       Rake::Task[:'test:view:run_tests_in_parallel'].invoke
     end

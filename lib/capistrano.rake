@@ -18,6 +18,7 @@ def cap(*parameters)
   Capistrano::CLI.new(parameters.map { |param| param.to_s }).execute!
 end
 
+desc("Controls capistrano through rake - requires capistrano gem installed")
 namespace :remote do
   desc "Removes unused releases from the releases directory."
   task(:cleanup) { cap :cleanup }

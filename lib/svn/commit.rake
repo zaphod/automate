@@ -8,29 +8,17 @@ task :pc => %w[
   svn:delete
   svn:up
   svn:fail_on_conflict
-  install_reliable_timer_if_necessary
-  install_mixology_if_necessary
   translations:generate_dev
   translations:generate_fr
   db:reset_if_necessary
   test:unit
   db:test:prepare
-  insert_factory_defaults
   deep_test:functional
   svn:add
   growl:update_cruise
   svn:st
   show_success
 ]
-
-desc "Insert defaults for the test database using the factory"
-task :insert_factory_defaults => :environment do
-  require 'test/infrastructure/factories/factory'
-  Factory.insert_defaults
-  Factory.create_vehicle_location :location_type => VehicleLocation::LocationType::DistributionCenter
-  Factory.create_vehicle_location :location_type => VehicleLocation::LocationType::Auction
-  Factory.create_user :username => "depot"
-end
 
 task :show_success do
   puts "about to check in"
@@ -86,66 +74,34 @@ end
 task :ci => :commit
 
 DEVS = %w[
-          z
-          hammer
-          david
-          philippe
-          dan
-          sudhindra
-          rao
-          clint
-          chu
-          steven
-          wisener
-          rob
-          pat
-          patrick
-          thunderbear
-          rick
+          list
+          of 
+          devs
          ]
 
 task :recognize do
   if get_saved_data("story_complete").downcase.include?("y")
     require 'playlist'
-    ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+    ENV['playlist_host'] = "{:machine => 'machine.name.local', :username => '', :password => ''}"
     Playlist.play(developers)
   end
 end
 
 task :standup do
   require 'playlist'
-  ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+  ENV['playlist_host'] = "{:machine => 'machine.name.local', :username => '', :password => ''}"
   Playlist.play ["standup"]
 end
 
 task :birthday do
   require 'playlist'
-  ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+  ENV['playlist_host'] = "{:machine => 'machine.name.local', :username => '', :password => ''}"
   Playlist.play ["birthday"]
 end
 
-task :install_reliable_timer_if_necessary do
-  puts "Detecting reliable_timer install..."
-  installed_gem = %x[gem list reliable_timer | grep '0.3']
-  if installed_gem.strip == ""
-    puts "Installing reliable_timer gem..."
-    sh "cd #{File.dirname(__FILE__) + '/../../../tools/reliable_timer'} && sudo rake install"
-  end
-end
-
-task :install_mixology_if_necessary do
-  puts "Detecting mixology install..."
-  installed_gem = %x[gem list mixology | grep '0.1.0']
-  if installed_gem.strip == ""
-    puts "Installing mixology gem..."
-    sh "sudo gem install mixology --version 0.1.0"
-  end
-end
-
-
 task :benny do
   require 'playlist'
-  ENV['playlist_host'] = "{:machine => 'maserati.local', :username => 'tworker', :password => 'thought'}"
+  ENV['playlist_host'] = "{:machine => 'machine.name', :username => '', :password => ''}"
   Playlist.play ["benny"]
 end
 
@@ -224,7 +180,7 @@ end
 
 def say statement, voice = "Bruce"
   if RUBY_PLATFORM =~ /darwin/
-    `echo thought | sudo -S -p '' ls`
+    `echo  | sudo -S -p '' ls`
     old_volume = `osascript -e "get Volume settings" | sed 's/,.*$//' | sed 's/^.*://'`.strip
     old_volume = old_volume.to_i/10
     %x[osascript -e "set Volume 100"]

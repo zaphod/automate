@@ -51,7 +51,7 @@ namespace :svn do
     revision = Readline.readline("revision: ").strip
     tag_name = Readline.readline("tag name: ").strip
     svn = SVN.new
-    command = "svn cp -r #{revision} #{svn.branch_url(RELEASE_1_BRANCHNAME)} #{svn.tag_url(tag_name)}"
+    command = "svn cp -r #{revision} #{svn.branch_url(RELEASE_BRANCHNAME)} #{svn.tag_url(tag_name)}"
     puts command
     system command
   end
@@ -59,7 +59,7 @@ namespace :svn do
   desc 'Merge revisions of a branch to trunk'
   task :merge do
     require RAILS_ROOT + "/lib/svn"
-    branch_name = Readline.readline("branch (#{RELEASE_1_BRANCHNAME}): ").strip
+    branch_name = Readline.readline("branch (#{RELEASE_BRANCHNAME}): ").strip
     branch_name = RELEASE_1_BRANCHNAME if branch_name.blank?
     
     start_revision = Readline.readline("start revision: ").strip
