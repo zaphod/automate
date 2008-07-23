@@ -78,3 +78,63 @@ routes.rake
 svn.rake
 svn/commit.rake
 test.rake
+
+
+Automation of our RoR project
+
+Builds and Continuous Integration loops are the key to fast and frequent feedback on an Agile project. When that project involves more than 2 people these practices become more visible and need more tuning. On the RoR projects these concerns can be addressed better. The elegance of ruby and tools like rake make this task simple and pleasant.
+
+Some of the areas that we have made improvements have been in automating scripts for 
+* build 
+* svn interactions
+* db
+* db and mysql control
+* testing - view, smoke, acceptance
+* background workers
+
+
+build - (includes description of another collaborative project 'rake commit')
+A broken build affects the productivity of a team(especially larger teams) a lot and hampers the frequent checkin practice. To reduce this time a significant amount of work has gone into building automation scripts that help developers go through routine manual tasks.
+These include - update, build database, run tests, prepare to commit, check the status of the build on cruisecontrol, and then actually commit. 
+The build targets ruby projects do exactly this. They help you do all the mundane svn tasks and actually commit the code with little or no supervision. The build targets also gather all the relevant data before hand(like name of the pair, checkin comment, story details etc.). This adds to developer free time and helps them work on something more useful than just staring at the build screen for it to seek input.
+
+svn interactions
+svn provides a very simple interface but the syntax is not very friendly for a quick and dirty checkin. Also one needs to worry about adding all files before committing, following the commit command with a message etc. The svn rake tasks take this burden away and make it user friendly for developers. They encapsulate all svn operations in the form of rake tasks that consider the prerequisites before doing the wrong things on a repository.
+
+db tasks
+Frequently running builds also forces the development team to ensure that the build is fast. After looking at details it turns out that a lot of database tearing down and building needs to be done as frequently as the build - and sometimes in very different ways.
+Automating this not only makes things easier but also makes them more reliable. Multiple versions of the same database are required for different kinds of testing - unit, functional, view, acceptance, production testing.
+DB tasks also involved verifying table constraints, validation of data 
+
+Data validation
+At one of the clients another team was responsible for migrating data from one system to the other. This was done using a database bridge and the rules for migration were defined by other stake holders on the project. The result was whenever our system tried to use this data there would be invalid data exceptions, application crash and what not. Our ruby application was not able to handle the kind of invalid data that was coming in. The issue was also complicated by the fact the data was being fed by a live feed and this issue would recur almost every day. A solution was developed which helped us locate and report bad data. This solution use the rails model validations on each object of our interest and we had rake task to run periodically(typically every night) to report instances of data rows that were invalid and the reason they were invalid.
+This report was available and browsable on cruisecontrol and thus added to transparency to all the teams involved in data munging.
+
+
+Performance testing
+Performance testing required us to build different datasets to help us do stress testing at different loads. Also another thing was we had no real data available at the time we started performance testing. So one of the team mates came up with an idea of generating lots of data based on some kind of variance around the sample data we had. The amount of data and also the variance could be changed. Since generating this much data was a long and arduous task we often dedicated a machine or two to build such datasets and store them. Everytime we ran performance tests it started with specifying which dataset to use and which tests were to be run. A cruisecontrol build recorded the results for the tests.
+
+mysql for db control
+Alongwith creating and dropping databases we need to create different databases with different kinds of users for testing purposes.
+Creating users, granting the correct permissions for different types of databases - dev, qa, production makes things repeatable and easy. The developers are relieved of remembering the correct sql syntax.
+
+testing - unit, functional, smoke, qa, view, acceptance
+At the developer machines we used rake to run unit and functional tests(we used deep_test to speed these up). Selenium grid was used to run smoke, qa, view and acceptance tests. All the tasks involved in building the environment for these tests(which include building a database version suitable for tests, building and running the application, configuring the selenium grid or selenium infrastructure and running and recording results) was also part of different cruise control builds.
+Developers used the view build/acceptance build to run on their machines frequently to debug bugs and resolve them. View tests and acceptance tests were tools we used to frequently navigate through the application and get to the issue. So every bug started with a view test which would have to be successful once the bug is fixed. 
+In running these tests we used rake to automatically take snapshots of the database which helped up forward and rewind our tests automatically. 
+Similar infrastructure was used by the qa's to keep track of test failures and quickly run tests when bugs were fixed.
+
+Background workers
+Our application involved fair amount of background processing - for example of data that was fed in, triggers from integration points with other systems etc. Controlling these background processes involved working with the the background worker infrastructure. This infrastructure was controlled with another rake tasks that started the workers in the right sequence and reported failures. 
+Monit was used to automatically restart these workers on abrupt failures.
+
+Playlist and standup
+We had a play list configured that would play a track of your choice(one track each person) on a successful story completion. This was our way of recognising the pair and applauding. This playlist used to be picked up during checkin by rake and appropriate track for each person.
+We also had a rake task that triggered automatically at the standup time and played a song to remind everyone of the standup time.
+
+Routes 
+A rake utility to show all routes in our rails project. This helped us take a quick look at all the routes scattered in different places. Also it resolved all the magical routes thus making our job easier.
+
+
+
+
